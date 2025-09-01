@@ -1,0 +1,405 @@
+
+<!-- saved from url=-->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>XR Test</title>
+  <script type="module" src="model-viewer.min.js"></script>
+
+</head>
+<body>
+  <style>
+/* This keeps child nodes hidden while the element loads */
+:not(:defined) > * {
+  display: none;
+}
+
+model-viewer {
+  /* background-color: #eee;*/
+  overflow-x: hidden;
+  /*--poster-color: #eee; */
+  --poster-color: transparent;
+  width: 100%;
+  height: 100%;
+}
+
+.button1 {
+  background-color: #fff;
+  padding: 2px 20px 2px 20px;
+  font-family: Quicksand, Helvetica Neue, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #182354;
+  /*height: 36px;*/
+  line-height: 36px;
+  border-radius: 30px;
+  border: 2px solid #182354;
+  top:3vh;
+  left: 15vh;
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+  position: absolute;
+}
+
+#ar-button {
+  /*background-image: url('ic_view_in_ar_new_white_48dp.png');*/
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  background-position: 12px 50%;
+  background-color: #1dbfa8;
+  white-space: nowrap;
+  padding: 2px 20px 2px 20px;
+  font-family: Quicksand, Helvetica Neue, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  /*height: 36px;*/
+  line-height: 36px;
+  border-radius: 40px;
+  border: none;
+
+  top:3vh;
+  right: 15vh;
+  -ms-transform: translateX(50%);
+  transform: translateX(50%);
+  position: absolute;
+}
+
+#ar-button:active {
+  background-color: #e8eaed;
+}
+
+#ar-button:focus {
+  outline: none;
+}
+
+#ar-button:focus-visible {
+  outline: 1px solid #4285f4;
+}
+
+@keyframes circle {
+  from {
+    transform: translateX(-50%) rotate(0deg) translateX(50px) rotate(0deg);
+  }
+  to {
+    transform: translateX(-50%) rotate(360deg) translateX(50px) rotate(-360deg);
+  }
+}
+
+@keyframes elongate {
+  from {
+    transform: translateX(100px);
+  }
+  to {
+    transform: translateX(-100px);
+  }
+}
+
+model-viewer > #ar-prompt {
+  position: absolute;
+  left: 50%;
+  bottom: 175px;
+  animation: elongate 2s infinite ease-in-out alternate;
+  display: none;
+}
+
+model-viewer[ar-status="session-started"] > #ar-prompt {
+  display: block;
+}
+
+model-viewer > #ar-prompt > img {
+  animation: circle 4s linear infinite;
+}
+
+model-viewer > #ar-failure {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 175px;
+  display: none;
+}
+
+model-viewer[ar-tracking="not-tracking"] > #ar-failure {
+  display: block;
+}
+
+.slider {
+  width: 95%;
+  text-align: center;
+  overflow: hidden;
+  position: absolute;
+  bottom: 16px;
+  left: 3vh;
+}
+
+.slides {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 10px;
+}
+
+.slides::-webkit-scrollbar {
+  width: 10px;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.slides::-webkit-scrollbar {
+  width: 0.2vw;
+  height: 10px;
+}
+
+.slides::-webkit-scrollbar-thumb {
+  background-color: #18235449;
+  border-radius: 10px;
+}
+
+.slides::-webkit-scrollbar-track {
+  background-color: #18235411;
+  border-radius: 10px;
+}
+
+.slides::-webkit-scrollbar-track:hover {
+  background-color: #18235421;
+}
+
+.slides::-webkit-scrollbar-thumb:hover {
+  background-color: #18235449;
+}
+
+.slide {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #fff;
+  margin-right: 10px;
+  border-radius: 20px;
+  border: none;
+  display: flex;
+}
+
+.slide.selected {
+  border: 4px solid #182354;
+}
+
+.slide:focus {
+  outline: none;
+}
+
+.slide:focus-visible {
+  outline: 1px solid #182354;
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+  </style>
+
+
+    <model-viewer src="Buffalo.glb" ios-src="" poster="Buffalo.webp" shadow-intensity="1" ar="" autoplay="" camera-target="0m 0.1m 0.05m" camera-controls="" quick-look-browsers="safari chrome" ar-modes="webxr scene-viewer quick-look" alt="A 3D model carousel" id="model-viewer" ar-status="not-presenting">  
+
+    <button slot="ar-button" id="ar-button">
+      ✨ View in AR
+    </button>
+
+        <div id="ar-prompt">
+          <img src="hand.png">
+        </div>
+      
+        <button id="ar-failure">
+          AR is not tracking!
+        </button>
+
+        <button class="button1" id="MusicOn" onclick="PlayStop(this)">
+          🎵 Music on!
+        </button>
+
+      
+        <div class="slider">
+          <div class="slides" id="ARelements">
+            <!--Spawn Point Elements-->
+          <button class="slide selected" 
+		  onclick="switchSrc(this,'Buffalo')" 
+		  style="background-image: url('Buffalo.webp');"></button>
+		  </div>
+        </div>
+
+
+      </model-viewer>
+
+      <audio loop="" id="sound">
+        <source src="Buffalo.mp3" type="audio/mpeg">
+        <source src="Buffalo.ogg" type="audio/ogg">
+        <p>Your browser doesn't support HTML5 audio.</p>
+      </audio>
+
+      <script>
+        // Spawn Elements
+        const divSlides = document.getElementById('ARelements');
+        const ARelement = [
+        "Buffalo"
+        //"LuchsTanz",
+        //"LuchsChristmas",
+        //"FuchsSchneemann",
+      ]
+      let first = true;
+      const baseEle = ''; // Webpreview
+      //const baseEle = ''; // Webpreview
+
+      for (var i = 0; i < ARelement.length; i++){
+        var newDiv = document.createElement("button");
+
+        // First Element is selected
+        if(first){
+          newDiv.className = 'slide selected';
+          first = false;
+          //Audio Source Setup
+          AudioSwitch(ARelement[i]);
+
+          // Modelviewer Setup
+          let view = document.querySelector("model-viewer");
+          view.src = baseEle+ARelement[i]+'.glb';
+          view.setAttribute('ios-src',baseEle+ARelement[i]+'.usdz');
+          view.setAttribute('poster',baseEle+ARelement[i]+'.webp');
+        }else{
+          newDiv.className = 'slide';
+        }
+        let path = baseEle + ARelement[i] + '.webp';
+        newDiv.style.backgroundImage = 'url("' +path+'")';
+        newDiv.setAttribute('onclick','switchSrc(this, "'+ARelement[i]+'")');
+        divSlides.appendChild(newDiv);
+      }
+
+      // Audio Controll Interface
+      function PlayStop(ButtonPress){
+          var sound = document.querySelector("#sound");
+          
+          if(ButtonPress.id == "MusicOn"){
+            sound.load();
+            sound.play();
+            ButtonPress.innerText = "🔇 Music off!";
+            ButtonPress.id = "MusicOff";
+            // console.log("An");
+          }else{
+            sound.pause();
+            sound.currentTime = 0;
+            ButtonPress.innerText = "🎵 Music on!";
+            ButtonPress.id = "MusicOn";
+            //console.log("Aus");
+          }
+
+      }
+
+      // Switch Audio Source 
+      function AudioSwitch(name){
+          let sound = document.getElementById('sound');
+          let AudioType = sound.children;
+
+          for (let i = 0; i < AudioType.length; i++) {
+            let element = AudioType[i];
+            let baseaudio = '';
+            if(element.getAttribute("type") == 'audio/mpeg'){
+              element.src = baseaudio + name + '.mp3';
+            }if(element.getAttribute("type") == 'audio/ogg') {
+              element.src = baseaudio + name + '.ogg';
+            }
+          }
+      }
+      </script>
+
+<script type="module">
+  const modelViewer = document.querySelector("model-viewer");
+
+  window.switchSrc = (element, name) => {
+    const base = baseEle + name;
+    modelViewer.src = base + '.glb'; // Web
+    modelViewer.setAttribute('ios-src', base + '.usdz') // IOS
+    modelViewer.poster = /*base*/baseEle + name + '.webp';
+    const slides = document.querySelectorAll(".slide");
+    slides.forEach((element) => { element.classList.remove("selected"); });
+    element.classList.add("selected");
+
+    // Audio Switch
+
+    AudioSwitch(name);
+
+    // console.log(sound.paused);
+
+    if (!sound.paused) {
+      sound.load();
+      sound.play();
+
+    }
+  };
+
+  document.querySelector(".slider").addEventListener('beforexrselect', (ev) => {
+    // Keep slider interactions from affecting the XR scene.
+    ev.preventDefault();
+  });
+</script>
+<script>
+  //Audio Mute
+
+  function addOnBlurListener(onBlurCallback, onFocusCallback) {
+    var hidden, visibilityState, visibilityChange; // check the visiblility of the page
+
+    if (typeof document.hidden !== "undefined") {
+      hidden = "hidden"; visibilityChange = "visibilitychange"; visibilityState = "visibilityState";
+    } else if (typeof document.mozHidden !== "undefined") {
+      hidden = "mozHidden"; visibilityChange = "mozvisibilitychange"; visibilityState = "mozVisibilityState";
+    } else if (typeof document.msHidden !== "undefined") {
+      hidden = "msHidden"; visibilityChange = "msvisibilitychange"; visibilityState = "msVisibilityState";
+    } else if (typeof document.webkitHidden !== "undefined") {
+      hidden = "webkitHidden"; visibilityChange = "webkitvisibilitychange"; visibilityState = "webkitVisibilityState";
+    }
+
+
+    if (typeof document.addEventListener === "undefined" || typeof hidden === "undefined") {
+      // not supported
+    } else {
+      document.addEventListener(visibilityChange, function () {
+        switch (document[visibilityState]) {
+          case "visible":
+            if (onFocusCallback) onFocusCallback();
+            break;
+          case "hidden":
+            if (onBlurCallback) onBlurCallback();
+            break;
+        }
+      }, false);
+    }
+  }
+
+  function muteAudio() {
+    console.log('mute');
+    let sound = document.querySelector("#sound");
+    sound.muted = true;
+  }
+
+  function unMuteAudio() {
+    console.log('unmute');
+    let sound = document.querySelector("#sound");
+    sound.muted = false;
+
+  }
+
+  addOnBlurListener(muteAudio, unMuteAudio);
+
+
+</script>
+
+
+
+
+
+
+
+</body></html>
