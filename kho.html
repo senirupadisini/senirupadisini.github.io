@@ -9,18 +9,24 @@
       #ar-overlay {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.8); color: white; display: flex; 
-        justify-content: center; align-items: center; z-index: 1000;
-        cursor: pointer; font-family: sans-serif;
+        flex-direction: column; justify-content: center; align-items: center; 
+        z-index: 1000; font-family: sans-serif; cursor: pointer;
       }
     </style>
   </head>
   <body>
 
-    <div id="ar-overlay">KETUK UNTUK MULAI AR & MUSIK</div>
+    <div id="ar-overlay">
+      <strong>KETUK UNTUK MENYALAKAN KAMERA</strong>
+      <p style="font-size: 12px;">Izinkan akses kamera jika muncul notifikasi</p>
+    </div>
 
     <a-scene 
       mindar-image="imageTargetSrc: https://senirupadisini.github.io/targets.mind; autoStart: false;" 
-      vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      embedded color-space="sRGB" 
+      renderer="colorManagement: true, physicallyCorrectLights" 
+      vr-mode-ui="enabled: false" 
+      device-orientation-permission-ui="enabled: false">
 
       <a-assets>
         <audio id="bgm" src="https://senirupadisini.github.io/background_music.mp3" crossorigin="anonymous" preload="auto"></audio>
@@ -29,7 +35,7 @@
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity id="target0" mindar-image-target="targetIndex: 0">
-        <a-plane color="blue" opacity="0.3" position="0 0 0"></a-plane>
+        <a-plane color="blue" opacity="0.5" position="0 0 0" rotation="0 0 0"></a-plane>
       </a-entity>
     </a-scene>
 
@@ -37,31 +43,35 @@
       const sceneEl = document.querySelector('a-scene');
       const overlay = document.getElementById('ar-overlay');
       const bgm = document.getElementById('bgm');
-      const targetEntity = document.getElementById('target0');
 
       overlay.addEventListener('click', () => {
+        // 1. Sembunyikan Overlay
         overlay.style.display = 'none';
         
-        // Memulai AR dengan cara yang paling kompatibel
-        if (sceneEl.components['mindar-image']) {
-          sceneEl.components['mindar-image'].start();
+        // 2. Akses MindAR System untuk menyalakan kamera
+        const arSystem = sceneEl.systems['mindar-image-system'];
+        if (arSystem) {
+          arSystem.start(); 
+          console.log("Kamera diinstruksikan menyala via System");
         }
-        
-        // "Memancing" izin audio browser agar tidak diblokir
+
+        // 3. Pancing izin Audio
         bgm.play().then(() => {
           bgm.pause();
           bgm.currentTime = 0;
-        }).catch(e => console.log("Audio permission interaction handled"));
+        }).catch(e => console.log("Izin audio didapat"));
       });
 
       // Event Musik
+      const targetEntity = document.getElementById('target0');
+      
       targetEntity.addEventListener('targetFound', () => {
-        console.log("MARKER DITEMUKAN");
-        bgm.play();
+        console.log("Marker Ditemukan!");
+        bgm.play().catch(err => console.error("Gagal putar audio:", err));
       });
 
       targetEntity.addEventListener('targetLost', () => {
-        console.log("MARKER HILANG");
+        console.log("Marker Hilang");
         bgm.pause();
       });
     </script>
