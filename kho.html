@@ -9,19 +9,20 @@
       #ar-overlay {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.8); color: white; display: flex; 
-        flex-direction: column; justify-content: center; align-items: center; 
-        z-index: 1000; font-family: sans-serif; cursor: pointer;
+        justify-content: center; align-items: center; z-index: 1000;
+        cursor: pointer; font-family: sans-serif; text-align: center; padding: 20px;
       }
     </style>
   </head>
   <body>
 
     <div id="ar-overlay">
-      <strong>KETUK UNTUK MENYALAKAN KAMERA</strong>
-      <p style="font-size: 12px;">Izinkan akses kamera jika muncul notifikasi</p>
+      <h2>SIAP DIMULAI</h2>
+      <p>Ketuk layar untuk mengaktifkan kamera dan musik.</p>
     </div>
 
     <a-scene 
+      id="scene-container"
       mindar-image="imageTargetSrc: https://senirupadisini.github.io/targets.mind; autoStart: false;" 
       embedded color-space="sRGB" 
       renderer="colorManagement: true, physicallyCorrectLights" 
@@ -34,8 +35,8 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity id="target0" mindar-image-target="targetIndex: 0">
-        <a-plane color="blue" opacity="0.5" position="0 0 0" rotation="0 0 0"></a-plane>
+      <a-entity id="target-kho" mindar-image-target="targetIndex: 0">
+        <a-plane color="blue" opacity="0.4" position="0 0 0"></a-plane>
       </a-entity>
     </a-scene>
 
@@ -45,33 +46,33 @@
       const bgm = document.getElementById('bgm');
 
       overlay.addEventListener('click', () => {
-        // 1. Sembunyikan Overlay
+        // 1. Sembunyikan pesan bantuan
         overlay.style.display = 'none';
-        
-        // 2. Akses MindAR System untuk menyalakan kamera
-        const arSystem = sceneEl.systems['mindar-image-system'];
-        if (arSystem) {
-          arSystem.start(); 
-          console.log("Kamera diinstruksikan menyala via System");
+
+        // 2. Jalankan kamera dengan cara yang aman dari error 'minus'
+        const mindarComponent = sceneEl.components['mindar-image'];
+        if (mindarComponent) {
+          mindarComponent.start(); // Ini cara panggil yang benar untuk MindAR di A-Frame
+          console.log("MindAR started.");
         }
 
-        // 3. Pancing izin Audio
+        // 3. Aktifkan Audio (Mancing izin browser)
         bgm.play().then(() => {
           bgm.pause();
           bgm.currentTime = 0;
-        }).catch(e => console.log("Izin audio didapat"));
+        }).catch(e => console.log("Audio permission granted"));
       });
 
-      // Event Musik
-      const targetEntity = document.getElementById('target0');
-      
+      // 4. Deteksi Gambar (Kho Khiem Bing)
+      const targetEntity = document.querySelector('#target-kho');
+
       targetEntity.addEventListener('targetFound', () => {
-        console.log("Marker Ditemukan!");
-        bgm.play().catch(err => console.error("Gagal putar audio:", err));
+        console.log("Marker ditemukan, musik berputar!");
+        bgm.play().catch(e => console.error("Gagal putar audio:", e));
       });
 
       targetEntity.addEventListener('targetLost', () => {
-        console.log("Marker Hilang");
+        console.log("Marker hilang, musik berhenti.");
         bgm.pause();
       });
     </script>
