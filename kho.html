@@ -9,25 +9,18 @@
       #ar-overlay {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.8); color: white; display: flex; 
-        flex-direction: column; justify-content: center; align-items: center; 
-        z-index: 1000; font-family: sans-serif; cursor: pointer;
+        justify-content: center; align-items: center; z-index: 1000;
+        cursor: pointer; font-family: sans-serif;
       }
-      #status { font-size: 12px; margin-top: 10px; color: #aaa; }
     </style>
   </head>
   <body>
 
-    <div id="ar-overlay">
-      <strong>KETUK UNTUK MEMULAI</strong>
-      <div id="status">Menunggu sistem siap...</div>
-    </div>
+    <div id="ar-overlay">KETUK UNTUK MULAI AR & MUSIK</div>
 
     <a-scene 
-      mindar-image="imageTargetSrc: https://senirupadisini.github.io/main/targets.mind; autoStart: false; uiLoading: yes; uiScanning: yes;" 
-      color-space="sRGB" 
-      renderer="colorManagement: true, physicallyCorrectLights" 
-      vr-mode-ui="enabled: false" 
-      device-orientation-permission-ui="enabled: false">
+      mindar-image="imageTargetSrc: https://senirupadisini.github.io/targets.mind; autoStart: false;" 
+      vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
 
       <a-assets>
         <audio id="bgm" src="https://senirupadisini.github.io/background_music.mp3" crossorigin="anonymous" preload="auto"></audio>
@@ -35,50 +28,40 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity id="target-anchor" mindar-image-target="targetIndex: 0">
-        <a-plane color="#1DB954" opacity="0.5" position="0 0 0" rotation="0 0 0"></a-plane>
+      <a-entity id="target0" mindar-image-target="targetIndex: 0">
+        <a-plane color="blue" opacity="0.3" position="0 0 0"></a-plane>
       </a-entity>
     </a-scene>
 
     <script>
       const sceneEl = document.querySelector('a-scene');
       const overlay = document.getElementById('ar-overlay');
-      const statusText = document.getElementById('status');
       const bgm = document.getElementById('bgm');
-
-      // 1. Cek apakah MindAR sudah terpasang di scene
-      sceneEl.addEventListener('loaded', () => {
-        statusText.innerText = "Sistem siap! Silakan ketuk.";
-      });
+      const targetEntity = document.getElementById('target0');
 
       overlay.addEventListener('click', () => {
-        // Memastikan komponen mindar-image ada sebelum start
-        const mindarComponent = sceneEl.components['mindar-image'];
+        overlay.style.display = 'none';
         
-        if (mindarComponent) {
-          overlay.style.display = 'none';
-          mindarComponent.start();
-          
-          // Memancing izin audio browser
-          bgm.play().then(() => {
-            bgm.pause();
-            bgm.currentTime = 0;
-          }).catch(e => console.log("Audio prep silent fail (normal)"));
-        } else {
-          statusText.innerText = "Error: Sistem AR belum termuat sempurna.";
+        // Memulai AR dengan cara yang paling kompatibel
+        if (sceneEl.components['mindar-image']) {
+          sceneEl.components['mindar-image'].start();
         }
+        
+        // "Memancing" izin audio browser agar tidak diblokir
+        bgm.play().then(() => {
+          bgm.pause();
+          bgm.currentTime = 0;
+        }).catch(e => console.log("Audio permission interaction handled"));
       });
 
-      // 2. Event Musik (Tanpa pengecekan .started yang error tadi)
-      const anchor = document.getElementById('target-anchor');
-      
-      anchor.addEventListener('targetFound', () => {
-        console.log("Marker ketemu!");
-        bgm.play().catch(e => console.log("Gagal putar musik:", e));
+      // Event Musik
+      targetEntity.addEventListener('targetFound', () => {
+        console.log("MARKER DITEMUKAN");
+        bgm.play();
       });
 
-      anchor.addEventListener('targetLost', () => {
-        console.log("Marker hilang!");
+      targetEntity.addEventListener('targetLost', () => {
+        console.log("MARKER HILANG");
         bgm.pause();
       });
     </script>
