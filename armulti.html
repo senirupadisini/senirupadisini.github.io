@@ -151,7 +151,7 @@
       sceneEl.addEventListener('arError', (e) => showError("AR Error: " + (e.detail || "Unknown error")));
 
       // ── TARGET 0: Widagdo → Video ──
-      const t0 = document.querySelectorAll('[mindar-image-target]')[0];
+      const t0 = document.querySelectorAll('[mindar-image-target]')[4];
       t0.addEventListener('targetFound', () => {
         activeVideo = videoWidagdo;
         videoWidagdo.muted = true; // mulai muted dulu agar autoplay berhasil
@@ -166,7 +166,7 @@
       });
 
       // ── TARGET 1: Does → Video ──
-      const t1 = document.querySelectorAll('[mindar-image-target]')[1];
+      const t1 = document.querySelectorAll('[mindar-image-target]')[5];
       t1.addEventListener('targetFound', () => {
         activeVideo = videoDoes;
         videoDoes.muted = true;
@@ -181,11 +181,11 @@
       });
 
       // ── TARGET 2: Lim Kwi Bing → Audio ──
-      const t2 = document.querySelectorAll('[mindar-image-target]')[2];
+      const t2 = document.querySelectorAll('[mindar-image-target]')[0];
       t2.addEventListener('targetFound', () => {
-        if (!audioPlaying[2]) {
+        if (!audioPlaying[0]) {
           audioLim.play().catch(e => console.error(e));
-          audioPlaying[2] = true;
+          audioPlaying[0] = true;
         }
       });
       t2.addEventListener('targetLost', () => {
@@ -195,17 +195,17 @@
       });
 
       // ── TARGET 3: Ong Kian Bie → Audio ──
-      const t3 = document.querySelectorAll('[mindar-image-target]')[3];
+      const t3 = document.querySelectorAll('[mindar-image-target]')[1];
       t3.addEventListener('targetFound', () => {
-        if (!audioPlaying[3]) {
+        if (!audioPlaying[1]) {
           audioOng.play().catch(e => console.error(e));
-          audioPlaying[3] = true;
+          audioPlaying[1] = true;
         }
       });
       t3.addEventListener('targetLost', () => {
         audioOng.pause();
         audioOng.currentTime = 0;
-        audioPlaying[3] = false;
+        audioPlaying[1] = false;
       });
 
       // ── TARGET 4 & 5: 3D GLB — tidak perlu event khusus, tampil otomatis ──
