@@ -57,6 +57,10 @@
         <!-- 3D Models (preloaded via asset) -->
         <a-asset-item id="model-tlp" src="https://senirupadisini.github.io/model_tan_liep_poen.glb"></a-asset-item>
         <a-asset-item id="model-kkb" src="https://senirupadisini.github.io/model_kho_khiem_bing.glb"></a-asset-item>
+		
+		<!-- Audio untuk 3D model -->
+        <audio id="audio-tlp" src="https://senirupadisini.github.io/audio_tan_liep_poen.mp3" preload="auto"></audio>
+        <audio id="audio-kkb" src="https://senirupadisini.github.io/audio_kho_khiem_bing.mp3" preload="auto"></audio>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -207,7 +211,24 @@
         audioOng.currentTime = 0;
         audioPlaying[1] = false;
       });
+  // ── TARGET 3 & 4: 3D GLB + Audio ──
+      const t4 = document.querySelectorAll('[mindar-image-target]')[3];
+      t4.addEventListener('targetFound', () => {
+        audioTlp.play().catch(e => console.error(e));
+      });
+      t4.addEventListener('targetLost', () => {
+        audioTlp.pause();
+        audioTlp.currentTime = 0;
+      });
 
+      const t5 = document.querySelectorAll('[mindar-image-target]')[4];
+      t5.addEventListener('targetFound', () => {
+        audioKkb.play().catch(e => console.error(e));
+      });
+      t5.addEventListener('targetLost', () => {
+        audioKkb.pause();
+        audioKkb.currentTime = 0;
+      });
       // ── TARGET 4 & 5: 3D GLB — tidak perlu event khusus, tampil otomatis ──
     </script>
   </body>
