@@ -73,12 +73,12 @@
 	  
      <!-- Index 2: Kho Khiem Bing → 3D GLB -->
       <a-entity mindar-image-target="targetIndex: 2">
-        <a-gltf-model src="#model-kkb" position="0 0 0" scale="0.100 0.100 0.100" rotation="0 0 0"></a-gltf-model>
+        <a-gltf-model src="#model-kkb" position="0 0 0" scale="0.80 0.80 0.80" rotation="0 0 0"></a-gltf-model>
       </a-entity>
      
       <!-- Index 3: Tan Liep Poen → 3D GLB -->
-      <a-entity mindar-image-target="targetIndex: 4">
-        <a-gltf-model src="#model-tlp" position="0 0 0" scale="0.100 0.100 0.100" rotation="0 0 0"></a-gltf-model>
+      <a-entity mindar-image-target="targetIndex: 3">
+        <a-gltf-model src="#model-tlp" position="0 0 0" scale="0.90 0.90 0.90" rotation="0 0 0"></a-gltf-model>
       </a-entity>
 	  
 	  <!-- Index 5: Widagdo → VIDEO -->
@@ -191,7 +191,7 @@
       t2.addEventListener('targetLost', () => {
         audioLim.pause();
         audioLim.currentTime = 0;
-        audioPlaying[2] = false;
+        audioPlaying[0] = false;
       });
 
       // ── TARGET 3: Ong Kian Bie → Audio ──
