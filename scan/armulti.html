@@ -38,37 +38,37 @@
     <div id="error-msg"></div>
     <button id="sound-btn">🔊 Ketuk untuk aktifkan suara</button>
 
-    <a-scene mindar-image="imageTargetSrc: https://senirupadisini.github.io/multitargets.mind; autoStart: false;"
+    <a-scene mindar-image="imageTargetSrc: https://senirupadisini.github.io/scan/multitargets.mind; autoStart: false;"
              color-space="sRGB"
              renderer="colorManagement: true, physicallyCorrectLights"
              vr-mode-ui="enabled: false"
              device-orientation-permission-ui="enabled: false">
 
       <a-assets>
-        <audio id="audio-lim" src="https://senirupadisini.github.io/audio_lim_kwi_bing.mp3" preload="auto"></audio>
-        <audio id="audio-ong" src="https://senirupadisini.github.io/audio_ong_kian_bie.mp3" preload="auto"></audio>
-        <audio id="audio-tlp" src="https://senirupadisini.github.io/audio_tan_liep_poen.mp3" preload="auto"></audio>
-        <audio id="audio-kkb" src="https://senirupadisini.github.io/audio_kho_khiem_bing.mp3" preload="auto"></audio>
+        <audio id="audio-lim" src="https://senirupadisini.github.io/scan/audio_lim_kwi_bing.mp3" preload="auto"></audio>
+        <audio id="audio-ong" src="https://senirupadisini.github.io/scan/audio_ong_kian_bie.mp3" preload="auto"></audio>
+        <audio id="audio-tlp" src="https://senirupadisini.github.io/scan/audio_tan_liep_poen.mp3" preload="auto"></audio>
+        <audio id="audio-kkb" src="https://senirupadisini.github.io/scan/audio_kho_khiem_bing.mp3" preload="auto"></audio>
 
-        <video id="video-widagdo" src="https://senirupadisini.github.io/video_widagdo.mp4"
+        <video id="video-widagdo" src="https://senirupadisini.github.io/scan/video_widagdo.mp4"
                playsinline webkit-playsinline loop preload="auto" crossorigin="anonymous"></video>
-        <video id="video-does" src="https://senirupadisini.github.io/video_does.mp4"
+        <video id="video-does" src="https://senirupadisini.github.io/scan/video_does.mp4"
                playsinline webkit-playsinline loop preload="auto" crossorigin="anonymous"></video>
 
-        <a-asset-item id="model-tlp" src="https://senirupadisini.github.io/model_tan_liep_poen.glb"></a-asset-item>
-        <a-asset-item id="model-kkb" src="https://senirupadisini.github.io/model_kho_khiem_bing.glb"></a-asset-item>
+        <a-asset-item id="model-tlp" src="https://senirupadisini.github.io/scan/model_tan_liep_poen.glb"></a-asset-item>
+        <a-asset-item id="model-kkb" src="https://senirupadisini.github.io/scan/model_kho_khiem_bing.glb"></a-asset-item>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <!-- Index 0: Lim Kwi Bing → AUDIO -->
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-image src="https://senirupadisini.github.io/lim_kwi_bing_marker.jpg" position="0 0 0" width="1" height="1"></a-image>
+        <a-image src="https://senirupadisini.github.io/scan/lim_kwi_bing_marker.jpg" position="0 0 0" width="1" height="1"></a-image>
       </a-entity>
 
       <!-- Index 1: Ong Kian Bie → AUDIO -->
       <a-entity mindar-image-target="targetIndex: 1">
-        <a-image src="https://senirupadisini.github.io/OngKian_Bie_marker.jpg" position="0 0 0" width="1" height="1"></a-image>
+        <a-image src="https://senirupadisini.github.io/scan/OngKian_Bie_marker.jpg" position="0 0 0" width="1" height="1"></a-image>
       </a-entity>
 
       <!-- Index 2: Kho Khiem Bing → 3D + Audio -->
