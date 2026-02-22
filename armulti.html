@@ -21,22 +21,13 @@
         font-size: 0.9em; z-index: 2000; padding: 0 10px;
         box-sizing: border-box;
       }
-      #unmute-btn {
-        display: none;
-        position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-        background: rgba(0,0,0,0.6); color: white; border: 2px solid white;
-        border-radius: 30px; padding: 10px 24px; font-size: 1em;
-        font-family: sans-serif; cursor: pointer; z-index: 2000;
-      }
     </style>
   </head>
   <body>
     <div id="ar-camera-permission">
-	<div style="font-size:1.3em; font-weight:bold; margin-bottom:10px;>
       Ketuk untuk memulai AR dan izinkan akses kamera
     </div>
     <div id="error-msg"></div>
-    <button id="unmute-btn">🔊 Ketuk untuk aktifkan suara</button>
 
     <a-scene mindar-image="imageTargetSrc: https://senirupadisini.github.io/multitargets.mind; autoStart: false;"
              color-space="sRGB"
