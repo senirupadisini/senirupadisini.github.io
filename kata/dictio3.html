@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Permainan Mencari Kata – Level 4</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Nunito:wght@400;600;700&display=swap');
+
+    :root {
+      --primary: #6A0572;
+      --primary-light: #9C27B0;
+      --accent: #E91E8C;
+      --bg: #FDF0FF;
+      --card: #FFFFFF;
+      --text: #2A0A2E;
+      --muted: #7B5F80;
+      --border: #DDB8E8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, #3A0042 100%);
+      padding: 28px 20px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '🎭';
+      position: absolute; font-size: 80px;
+      top: -10px; left: -10px; opacity: 0.1;
+    }
+    .header::after {
+      content: '🪄';
+      position: absolute; font-size: 80px;
+      bottom: -10px; right: -10px; opacity: 0.1;
+    }
+    .header h1 {
+      font-family: 'Merriweather', serif;
+      font-size: clamp(18px, 5vw, 30px);
+      color: #F8E8FF;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .header p {
+      color: #F48FB1;
+      font-size: 11px;
+      margin-top: 6px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .level-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 20px;
+      letter-spacing: 1.5px;
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    .intro-text {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--border);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    @media (min-width: 560px) {
+      .cards { grid-template-columns: 1fr 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(106,5,114,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(106,5,114,0.14);
+    }
+    .card-icon { font-size: 28px; margin-bottom: 10px; }
+    .card h2 {
+      font-family: 'Merriweather', serif;
+      font-size: 15px;
+      color: var(--primary);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .card p {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+    .card b { color: var(--primary-light); }
+
+    .cta-wrap { text-align: center; margin-top: 8px; }
+    .btn-next {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #F8E8FF;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 14px 36px;
+      border-radius: 50px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 18px rgba(106,5,114,0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-next:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(106,5,114,0.45);
+    }
+    .btn-next:active { transform: scale(0.97); }
+    .btn-hint {
+      display: block;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 11px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Permainan Mencari Kata</h1>
+  <p>Seni & Tradisi – Cerita Panji</p>
+  <div class="level-badge">🎭 Level 4</div>
+</div>
+
+<div class="container">
+
+  <div class="intro-text">
+    Level ini membahas <strong>seni pertunjukan dan tradisi budaya</strong> yang lahir dari Cerita Panji — mulai dari tari topeng, wayang, hingga persebaran seni ke berbagai penjuru Nusantara dan Asia Tenggara. Kenali istilah-istilah seni ini sebelum bermain!
+  </div>
+
+  <div class="section-label">Seni, Tari & Tradisi</div>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-icon">🎭</div>
+      <h2>Topeng</h2>
+      <p>Tari Topeng adalah seni pertunjukan tertua yang bercerita tentang Panji. Setiap topeng mewakili karakter berbeda: <b>Panji (putih)</b>, <b>Gunungsari (hijau)</b>, <b>Klana (merah)</b>, dan <b>Bapang (merah-hitam)</b>. Tari Topeng Cirebon adalah salah satu yang paling terkenal di Jawa.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🎪</div>
+      <h2>Wayang</h2>
+      <p>Cerita Panji juga diadaptasi ke dalam pertunjukan <b>Wayang Gedog</b> — jenis wayang khusus yang membawakan kisah Panji. Berbeda dengan Wayang Purwa yang bercerita Mahabharata dan Ramayana, Wayang Gedog murni mengangkat dunia <b>Panji Asmarabangun</b> dan Dewi Sekartaji.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🌺</div>
+      <h2>Legong</h2>
+      <p>Di Bali, Cerita Panji diwujudkan dalam tari <b>Legong Keraton</b>. Tari ini dibawakan oleh penari muda perempuan dengan kostum keemasan yang megah. Kisah Panji dalam versi Bali dikenal dengan nama <b>Malat</b> dan menjadi salah satu karya sastra Bali yang paling dihormati.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🏮</div>
+      <h2>Inao (อิเหนา)</h2>
+      <p>Di Thailand, Cerita Panji dikenal sebagai <b>Inao</b> — karya sastra agung zaman Raja Rama II. Pertunjukan <b>Khon</b> (tari topeng Thai) dan <b>Lakhon</b> (drama tari) mengangkat kisah Inao sebagai salah satu repertoir utamanya hingga kini.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🎵</div>
+      <h2>Macapat</h2>
+      <p>Cerita Panji juga hidup dalam tradisi sastra lisan <b>Macapat</b> — tembang (lagu) Jawa dengan aturan metrum tertentu. Kisah Panji dinyanyikan dalam tembang seperti <b>Kinanthi, Sinom, Asmaradana</b>, dan dibacakan dalam upacara adat Jawa hingga hari ini.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">📜</div>
+      <h2>Malat (Kidung)</h2>
+      <p>Di Bali dan Lombok, Cerita Panji disebut <b>Malat</b> atau <b>Kidung Malat</b>. Naskah ini ditulis dalam bahasa Jawa Pertengahan dan dianggap sakral. Kidung Malat biasa dibacakan dalam upacara keagamaan <b>Hindu Bali</b> sebagai bentuk doa dan penghormatan leluhur.</p>
+    </div>
+
+  </div>
+
+  <div class="cta-wrap">
+    <a href="level4.html" class="btn-next">🎮 Mulai Permainan →</a>
+    <span class="btn-hint">Temukan istilah seni & budaya Panji yang tersembunyi!</span>
+  </div>
+
+</div>
+
+<footer>Copyright &copy; 2019 Syarifuddin &nbsp;·&nbsp; Cerita Panji – Level 4</footer>
+
+</body>
+</html>
