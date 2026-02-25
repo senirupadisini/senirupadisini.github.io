@@ -197,6 +197,20 @@
         });
       }
 
+      function stopAllVideo() {
+        [videoWidagdo, videoDoes].forEach(v => {
+          try { v.pause(); v.currentTime = 0; } catch(e){}
+        });
+        activeVideo = null;
+        unmuteBtn.style.display = 'none';
+      }
+
+      function stopAll() {
+        stopAllAudio();
+        stopAllVideo();
+        hidePanel();
+      }
+
       function showPanel(senimanObj) {
         activeTarget = senimanObj;
         langName.textContent = senimanObj.name;
@@ -268,44 +282,40 @@
         const tDoes    = document.getElementById('target-does');
 
         // targetIndex 0 → Lim Kwi Bing
-        tLim.addEventListener('targetFound', () => showPanel(seniman.lim));
-        tLim.addEventListener('targetLost',  () => { stopAllAudio(); hidePanel(); });
+        tLim.addEventListener('targetFound', () => { stopAll(); showPanel(seniman.lim); });
+        tLim.addEventListener('targetLost',  () => stopAll());
 
         // targetIndex 1 → Ong Kian Bie
-        tOng.addEventListener('targetFound', () => showPanel(seniman.ong));
-        tOng.addEventListener('targetLost',  () => { stopAllAudio(); hidePanel(); });
+        tOng.addEventListener('targetFound', () => { stopAll(); showPanel(seniman.ong); });
+        tOng.addEventListener('targetLost',  () => stopAll());
 
         // targetIndex 2 → Kho Khiem Bing
-        tKkb.addEventListener('targetFound', () => showPanel(seniman.kkb));
-        tKkb.addEventListener('targetLost',  () => { stopAllAudio(); hidePanel(); });
+        tKkb.addEventListener('targetFound', () => { stopAll(); showPanel(seniman.kkb); });
+        tKkb.addEventListener('targetLost',  () => stopAll());
 
         // targetIndex 3 → Tan Liep Poen
-        tTlp.addEventListener('targetFound', () => showPanel(seniman.tlp));
-        tTlp.addEventListener('targetLost',  () => { stopAllAudio(); hidePanel(); });
+        tTlp.addEventListener('targetFound', () => { stopAll(); showPanel(seniman.tlp); });
+        tTlp.addEventListener('targetLost',  () => stopAll());
 
         // targetIndex 4 → Video Widagdo
         tWidagdo.addEventListener('targetFound', () => {
+          stopAll();
           activeVideo = videoWidagdo;
           videoWidagdo.muted = true;
           videoWidagdo.play().catch(e=>{});
           unmuteBtn.style.display = 'block';
         });
-        tWidagdo.addEventListener('targetLost', () => {
-          videoWidagdo.pause(); videoWidagdo.currentTime = 0;
-          activeVideo = null; unmuteBtn.style.display = 'none';
-        });
+        tWidagdo.addEventListener('targetLost', () => stopAll());
 
         // targetIndex 5 → Video Van der Does
         tDoes.addEventListener('targetFound', () => {
+          stopAll();
           activeVideo = videoDoes;
           videoDoes.muted = true;
           videoDoes.play().catch(e=>{});
           unmuteBtn.style.display = 'block';
         });
-        tDoes.addEventListener('targetLost', () => {
-          videoDoes.pause(); videoDoes.currentTime = 0;
-          activeVideo = null; unmuteBtn.style.display = 'none';
-        });
+        tDoes.addEventListener('targetLost', () => stopAll());
 
       });
     </script>
