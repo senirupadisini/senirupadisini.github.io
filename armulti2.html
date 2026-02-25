@@ -33,14 +33,15 @@
       /* ── Panel tombol dua bahasa ── */
       #lang-panel {
         display: none;
-        position: absolute;
+        position: fixed;
         bottom: 40px;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 3000;
+        z-index: 9999;
         flex-direction: column;
         align-items: center;
         gap: 12px;
+        pointer-events: auto;
       }
       #lang-panel .lang-label {
         color: white;
@@ -97,7 +98,7 @@
              device-orientation-permission-ui="enabled: false">
 
       <a-assets>
-        <!-- Audio Indonesia -->
+         <!-- Audio Indonesia -->
         <audio id="audio-lim"     src="https://senirupadisini.github.io/audio_lim_kwi_bing_id.mp3"     preload="auto"></audio>
         <audio id="audio-ong"     src="https://senirupadisini.github.io/audio_ong_kian_bie_id.mp3"     preload="auto"></audio>
         <audio id="audio-tlp"     src="https://senirupadisini.github.io/audio_tan_liep_poen_id.mp3"    preload="auto"></audio>
@@ -257,48 +258,54 @@
         }
       }
 
-      sceneEl.addEventListener('loaded', () => {
-        arCameraPermission.addEventListener('click', startAR);
-      });
-      sceneEl.addEventListener('arReady', () => console.log("MindAR is ready!"));
       sceneEl.addEventListener('arError', (e) => showError("AR Error: " + (e.detail || "Unknown error")));
 
-      const targets = document.querySelectorAll('[mindar-image-target]');
+      // Tunggu A-Frame loaded baru pasang semua event listener target
+      sceneEl.addEventListener('loaded', () => {
+        arCameraPermission.addEventListener('click', startAR);
 
-      // ── TARGET 0: Widagdo → Video ──
-      targets[0].addEventListener('targetFound', () => {
-        activeVideo = videoWidagdo;
-        videoWidagdo.muted = true;
-        videoWidagdo.play().catch(e => console.error(e));
-        unmuteBtn.style.display = 'block';
-      });
-      targets[0].addEventListener('targetLost', () => {
-        videoWidagdo.pause(); videoWidagdo.currentTime = 0;
-        activeVideo = null; unmuteBtn.style.display = 'none';
-      });
+        const targets = document.querySelectorAll('[mindar-image-target]');
+        console.log("Targets found:", targets.length);
 
-      // ── TARGET 1: Does → Video ──
-      targets[1].addEventListener('targetFound', () => {
-        activeVideo = videoDoes;
-        videoDoes.muted = true;
-        videoDoes.play().catch(e => console.error(e));
-        unmuteBtn.style.display = 'block';
-      });
-      targets[1].addEventListener('targetLost', () => {
-        videoDoes.pause(); videoDoes.currentTime = 0;
-        activeVideo = null; unmuteBtn.style.display = 'none';
-      });
-
-      // ── TARGET 2, 3, 4, 5 → Audio + Tombol Dua Bahasa ──
-      [2, 3, 4, 5].forEach(idx => {
-        targets[idx].addEventListener('targetFound', () => {
-          showLangPanel(idx);
+        // ── TARGET 0: Widagdo → Video ──
+        targets[0].addEventListener('targetFound', () => {
+          activeVideo = videoWidagdo;
+          videoWidagdo.muted = true;
+          videoWidagdo.play().catch(e => console.error(e));
+          unmuteBtn.style.display = 'block';
         });
-        targets[idx].addEventListener('targetLost', () => {
-          stopAllAudio();
-          hideLangPanel();
+        targets[0].addEventListener('targetLost', () => {
+          videoWidagdo.pause(); videoWidagdo.currentTime = 0;
+          activeVideo = null; unmuteBtn.style.display = 'none';
+        });
+
+        // ── TARGET 1: Does → Video ──
+        targets[1].addEventListener('targetFound', () => {
+          activeVideo = videoDoes;
+          videoDoes.muted = true;
+          videoDoes.play().catch(e => console.error(e));
+          unmuteBtn.style.display = 'block';
+        });
+        targets[1].addEventListener('targetLost', () => {
+          videoDoes.pause(); videoDoes.currentTime = 0;
+          activeVideo = null; unmuteBtn.style.display = 'none';
+        });
+
+        // ── TARGET 2, 3, 4, 5 → Audio + Tombol Dua Bahasa ──
+        [2, 3, 4, 5].forEach(idx => {
+          targets[idx].addEventListener('targetFound', () => {
+            console.log("targetFound:", idx);
+            showLangPanel(idx);
+          });
+          targets[idx].addEventListener('targetLost', () => {
+            console.log("targetLost:", idx);
+            stopAllAudio();
+            hideLangPanel();
+          });
         });
       });
+
+      sceneEl.addEventListener('arReady', () => console.log("MindAR is ready!"));
     </script>
   </body>
 </html>
