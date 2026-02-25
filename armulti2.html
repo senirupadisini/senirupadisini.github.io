@@ -43,6 +43,9 @@
         gap: 12px;
         pointer-events: auto;
       }
+      #lang-panel.active {
+        display: flex !important;
+      }
       #lang-panel .lang-label {
         color: white;
         font-family: sans-serif;
@@ -98,7 +101,7 @@
              device-orientation-permission-ui="enabled: false">
 
       <a-assets>
-         <!-- Audio Indonesia -->
+        <!-- Audio Indonesia -->
         <audio id="audio-lim"     src="https://senirupadisini.github.io/audio_lim_kwi_bing_id.mp3"     preload="auto"></audio>
         <audio id="audio-ong"     src="https://senirupadisini.github.io/audio_ong_kian_bie_id.mp3"     preload="auto"></audio>
         <audio id="audio-tlp"     src="https://senirupadisini.github.io/audio_tan_liep_poen_id.mp3"    preload="auto"></audio>
@@ -200,10 +203,10 @@
         document.getElementById('lang-panel-title').textContent = markerNames[targetIdx] || 'Pilih bahasa';
         btnLang1.classList.remove('playing');
         btnLang2.classList.remove('playing');
-        langPanel.style.display = 'flex';
+        langPanel.classList.add('active');
       }
       function hideLangPanel() {
-        langPanel.style.display = 'none';
+        langPanel.classList.remove('active');
         activeTarget = null;
         btnLang1.classList.remove('playing');
         btnLang2.classList.remove('playing');
