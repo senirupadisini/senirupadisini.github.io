@@ -6,17 +6,77 @@
     <meta name="description" content="&lt;model-viewer&gt; template">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link type="text/css" href="./styles.css" rel="stylesheet"/>
+    <style>
+      #language-selector {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        display: flex;
+        gap: 12px;
+        background: rgba(0,0,0,0.5);
+        padding: 10px 16px;
+        border-radius: 50px;
+        backdrop-filter: blur(8px);
+      }
+
+      .lang-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 20px;
+        border: 2px solid transparent;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        background: rgba(255,255,255,0.15);
+        color: white;
+        transition: all 0.3s ease;
+      }
+
+      .lang-btn:hover {
+        background: rgba(255,255,255,0.3);
+      }
+
+      .lang-btn.active {
+        background: white;
+        color: #333;
+        border-color: white;
+      }
+
+      .lang-btn .flag {
+        font-size: 18px;
+      }
+    </style>
   </head>
   <body>
-    <!-- Audio Element -->
-    <audio id="bg-audio" loop>
+
+    <!-- Tombol Pilihan Bahasa -->
+    <div id="language-selector">
+      <button class="lang-btn" id="btn-en" onclick="selectLanguage('en')">
+        <span class="flag">🇬🇧</span> English
+      </button>
+      <button class="lang-btn" id="btn-id" onclick="selectLanguage('id')">
+        <span class="flag">🇮🇩</span> Indonesia
+      </button>
+    </div>
+
+    <!-- Audio English -->
+    <audio id="audio-en" loop>
       <source src="audio_ong_kian_bie.mp3" type="audio/mpeg">
-      <!--source src="audio.ogg" type="audio/ogg"-->
-      Your browser does not support the audio element.
     </audio>
 
-    <!-- <model-viewer> HTML element -->
-    <model-viewer src="chairil.glb" ar ar-modes="scene-viewer webxr quick-look" camera-controls tone-mapping="neutral" poster="poster.webp" shadow-intensity="1" autoplay>
+    <!-- Audio Indonesia -->
+    <audio id="audio-id" loop>
+      <source src="Ong Kian Bie (ID).mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- model-viewer -->
+    <model-viewer src="chairil.glb" ar ar-modes="scene-viewer webxr quick-look" 
+      camera-controls tone-mapping="neutral" poster="poster.webp" 
+      shadow-intensity="1" autoplay>
       <div class="progress-bar hide" slot="progress-bar">
           <div class="update-bar"></div>
       </div>
@@ -26,32 +86,56 @@
       <div id="ar-prompt">
           <img src="ar_hand_prompt.png">
       </div>
-    </model-viewer>  
+    </model-viewer>
 
     <script src="script.js"></script>
-    <!-- Loads <model-viewer> for browsers: -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 
     <script>
-      const audio = document.getElementById('bg-audio');
+      let currentLang = null;
+      const audioEN = document.getElementById('audio-en');
+      const audioID = document.getElementById('audio-id');
       const modelViewer = document.querySelector('model-viewer');
+      let modelLoaded = false;
 
-      // Coba autoplay saat halaman load
-      function tryPlay() {
+      // Saat model selesai load
+      modelViewer.addEventListener('load', () => {
+        modelLoaded = true;
+        // Jika pengguna sudah pilih bahasa sebelum model selesai load
+        if (currentLang) playAudio(currentLang);
+      });
+
+      function selectLanguage(lang) {
+        // Update tombol aktif
+        document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+        document.getElementById('btn-id').classList.toggle('active', lang === 'id');
+
+        // Stop semua audio
+        stopAll();
+
+        currentLang = lang;
+
+        // Jika model sudah siap, langsung play
+        if (modelLoaded) {
+          playAudio(lang);
+        }
+      }
+
+      function playAudio(lang) {
+        const audio = lang === 'en' ? audioEN : audioID;
+        audio.currentTime = 0;
         audio.play().catch(() => {
-          // Browser memblokir autoplay, tunggu interaksi pengguna
+          // Fallback jika browser blokir autoplay
           document.addEventListener('click', () => audio.play(), { once: true });
-          document.addEventListener('touchstart', () => audio.play(), { once: true });
         });
       }
 
-      // Jalankan audio bersamaan saat model selesai load
-      modelViewer.addEventListener('load', () => {
-        tryPlay();
-      });
-
-      // Fallback: jalankan saat halaman siap jika model cepat load
-      window.addEventListener('load', tryPlay);
+      function stopAll() {
+        audioEN.pause();
+        audioEN.currentTime = 0;
+        audioID.pause();
+        audioID.currentTime = 0;
+      }
     </script>
   </body>
 </html>
