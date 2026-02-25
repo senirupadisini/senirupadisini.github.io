@@ -5,75 +5,85 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <style>
-      body { margin: 0; overflow: hidden; background: black; }
-      a-scene, canvas { width: 100vw !important; height: 100vh !important; position: fixed !important; top: 0 !important; left: 0 !important; }
-
-      #ar-camera-permission {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: black; color: white; display: flex; justify-content: center;
-        align-items: center; text-align: center; z-index: 9999;
-        font-family: sans-serif; font-size: 1.2em; cursor: pointer;
-        padding: 20px; box-sizing: border-box;
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { overflow: hidden; background: black; }
+      a-scene, canvas {
+        width: 100vw !important; height: 100vh !important;
+        position: fixed !important; top: 0 !important; left: 0 !important;
       }
+
+      /* ── Layar awal ── */
+      #ar-start {
+        position: fixed; inset: 0;
+        background: black; color: white;
+        display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
+        gap: 24px; z-index: 9999;
+        font-family: sans-serif; text-align: center;
+        padding: 30px;
+      }
+      #ar-start p { font-size: 1.3em; line-height: 1.5; }
+      #btn-start {
+        background: white; color: black;
+        border: none; border-radius: 50px;
+        padding: 20px 50px; font-size: 1.4em;
+        font-weight: bold; cursor: pointer;
+        font-family: sans-serif;
+      }
+
+      /* ── Error ── */
       #error-msg {
         display: none;
         position: fixed; bottom: 20px; left: 0; width: 100%;
         text-align: center; color: red; font-family: sans-serif;
-        font-size: 0.9em; z-index: 9999;
+        font-size: 1em; z-index: 9999; padding: 0 16px;
       }
+
+      /* ── Unmute video ── */
       #unmute-btn {
         display: none;
-        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-        background: rgba(0,0,0,0.7); color: white; border: 2px solid white;
-        border-radius: 30px; padding: 10px 24px; font-size: 1em;
+        position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%);
+        background: rgba(0,0,0,0.75); color: white; border: 2.5px solid white;
+        border-radius: 50px; padding: 16px 36px; font-size: 1.2em;
         font-family: sans-serif; cursor: pointer; z-index: 9999;
+        white-space: nowrap;
       }
 
-      /* DEBUG log */
-      #debug-log {
-        position: fixed; top: 10px; left: 10px; right: 10px;
-        background: rgba(0,0,0,0.75); color: lime;
-        font-family: monospace; font-size: 12px;
-        padding: 8px; border-radius: 8px;
-        z-index: 99999; max-height: 120px; overflow-y: auto;
-        pointer-events: none;
-      }
-
-      /* Panel bahasa */
+      /* ── Panel tombol bahasa ── */
       #lang-panel {
-        position: fixed;
-        bottom: 40px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 99999;
-        flex-direction: column;
-        align-items: center;
-        gap: 14px;
-        pointer-events: all;
         display: none;
+        position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%);
+        z-index: 9999;
+        flex-direction: column; align-items: center; gap: 16px;
       }
       #lang-panel.active { display: flex; }
 
-      .lang-label {
-        color: white; font-family: sans-serif; font-size: 0.95em;
-        background: rgba(0,0,0,0.7); padding: 5px 18px; border-radius: 20px;
+      #lang-name {
+        color: white; font-family: sans-serif; font-size: 1.2em; font-weight: bold;
+        background: rgba(0,0,0,0.7); padding: 8px 28px; border-radius: 30px;
+        letter-spacing: 1px; white-space: nowrap;
       }
-      .lang-buttons { display: flex; gap: 14px; }
+      .lang-buttons { display: flex; gap: 16px; }
       .lang-btn {
-        background: rgba(0,0,0,0.75); color: white;
-        border: 2.5px solid white; border-radius: 30px;
-        padding: 14px 26px; font-size: 1em; font-family: sans-serif;
-        cursor: pointer; white-space: nowrap; pointer-events: all;
+        background: rgba(0,0,0,0.8); color: white;
+        border: 2.5px solid white; border-radius: 50px;
+        padding: 16px 32px; font-size: 1.2em;
+        font-family: sans-serif; cursor: pointer; white-space: nowrap;
       }
-      .lang-btn.playing { background: rgba(255,255,255,0.3); }
-      .lang-btn .flag { font-size: 1.2em; margin-right: 6px; }
+      .lang-btn.active-lang {
+        background: white; color: black;
+      }
     </style>
   </head>
   <body>
 
-    <div id="ar-camera-permission">Ketuk untuk memulai AR dan izinkan akses kamera</div>
+    <!-- Layar awal -->
+    <div id="ar-start">
+      <p>Ketuk tombol di bawah untuk memulai AR dan izinkan akses kamera</p>
+      <button id="btn-start">📷 Mulai AR</button>
+    </div>
+
     <div id="error-msg"></div>
-    <div id="debug-log">⏳ Menunggu...</div>
     <button id="unmute-btn">🔊 Ketuk untuk aktifkan suara</button>
 
     <!-- Audio di luar a-scene -->
@@ -88,18 +98,20 @@
 
     <!-- Panel bahasa -->
     <div id="lang-panel">
-      <div class="lang-label" id="lang-panel-title">Pilih bahasa</div>
+      <div id="lang-name">-</div>
       <div class="lang-buttons">
-        <button class="lang-btn" id="btn-lang1"><span class="flag">🇮🇩</span>Indonesia</button>
-        <button class="lang-btn" id="btn-lang2"><span class="flag">🌐</span>English</button>
+        <button class="lang-btn" id="btn-id">🇮🇩 Indonesia</button>
+        <button class="lang-btn" id="btn-en">🌐 English</button>
       </div>
     </div>
 
-    <a-scene mindar-image="imageTargetSrc: https://senirupadisini.github.io/multitargets.mind; autoStart: false;"
-             color-space="sRGB"
-             renderer="colorManagement: true, physicallyCorrectLights"
-             vr-mode-ui="enabled: false"
-             device-orientation-permission-ui="enabled: false">
+    <a-scene
+      mindar-image="imageTargetSrc: https://senirupadisini.github.io/targets.mind; autoStart: false;"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false">
+
       <a-assets>
         <video id="video-widagdo" src="https://senirupadisini.github.io/video_widagdo.mp4"
                playsinline webkit-playsinline loop preload="auto" crossorigin="anonymous"></video>
@@ -111,93 +123,96 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
+      <!-- Index 0: Widagdo → VIDEO -->
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-video src="#video-widagdo" position="0 0 0" width="1" height="0.56"></a-video>
+        <a-video src="#video-widagdo" position="0 0 0" width="1" height="0.56" rotation="0 0 0"></a-video>
       </a-entity>
+
+      <!-- Index 1: W.J.P. van der Does → VIDEO -->
       <a-entity mindar-image-target="targetIndex: 1">
-        <a-video src="#video-does" position="0 0 0" width="1" height="0.56"></a-video>
+        <a-video src="#video-does" position="0 0 0" width="1" height="0.56" rotation="0 0 0"></a-video>
       </a-entity>
+
+      <!-- Index 2: Lim Kwi Bing → AUDIO -->
       <a-entity mindar-image-target="targetIndex: 2">
         <a-image src="https://senirupadisini.github.io/lim_kwi_bing_marker.jpg" position="0 0 0" width="1" height="1"></a-image>
       </a-entity>
+
+      <!-- Index 3: Ong Kian Bie → AUDIO -->
       <a-entity mindar-image-target="targetIndex: 3">
         <a-image src="https://senirupadisini.github.io/OngKian_Bie_marker.jpg" position="0 0 0" width="1" height="1"></a-image>
       </a-entity>
+
+      <!-- Index 4: Tan Liep Poen → 3D GLB -->
       <a-entity mindar-image-target="targetIndex: 4">
-        <a-gltf-model src="#model-tlp" position="0 0 0" scale="0.1 0.1 0.1"></a-gltf-model>
+        <a-gltf-model src="#model-tlp" position="0 0 0" scale="0.1 0.1 0.1" rotation="0 0 0"></a-gltf-model>
       </a-entity>
+
+      <!-- Index 5: Kho Khiem Bing → 3D GLB -->
       <a-entity mindar-image-target="targetIndex: 5">
-        <a-gltf-model src="#model-kkb" position="0 0 0" scale="0.1 0.1 0.1"></a-gltf-model>
+        <a-gltf-model src="#model-kkb" position="0 0 0" scale="0.1 0.1 0.1" rotation="0 0 0"></a-gltf-model>
       </a-entity>
+
     </a-scene>
 
     <script>
-      const log = (msg) => {
-        const el = document.getElementById('debug-log');
-        el.innerHTML += '<br>' + msg;
-        el.scrollTop = el.scrollHeight;
-        console.log(msg);
-      };
+      const sceneEl   = document.querySelector('a-scene');
+      const arStart   = document.getElementById('ar-start');
+      const btnStart  = document.getElementById('btn-start');
+      const errorMsg  = document.getElementById('error-msg');
+      const unmuteBtn = document.getElementById('unmute-btn');
+      const langPanel = document.getElementById('lang-panel');
+      const langName  = document.getElementById('lang-name');
+      const btnId     = document.getElementById('btn-id');
+      const btnEn     = document.getElementById('btn-en');
 
-      const sceneEl            = document.querySelector('a-scene');
-      const arCameraPermission = document.getElementById('ar-camera-permission');
-      const errorMsg           = document.getElementById('error-msg');
-      const unmuteBtn          = document.getElementById('unmute-btn');
-      const langPanel          = document.getElementById('lang-panel');
-      const btnLang1           = document.getElementById('btn-lang1');
-      const btnLang2           = document.getElementById('btn-lang2');
-
-      const audios = {
-        2: { id: document.getElementById('audio-lim'),    en: document.getElementById('audio-lim-en')  },
-        3: { id: document.getElementById('audio-ong'),    en: document.getElementById('audio-ong-en')  },
-        4: { id: document.getElementById('audio-tlp'),    en: document.getElementById('audio-tlp-en')  },
-        5: { id: document.getElementById('audio-kkb'),    en: document.getElementById('audio-kkb-en')  },
+      const audioMap = {
+        2: { id: document.getElementById('audio-lim'),    en: document.getElementById('audio-lim-en'),  name: 'Lim Kwi Bing'    },
+        3: { id: document.getElementById('audio-ong'),    en: document.getElementById('audio-ong-en'),  name: 'Ong Kian Bie'    },
+        4: { id: document.getElementById('audio-tlp'),    en: document.getElementById('audio-tlp-en'),  name: 'Tan Liep Poen'   },
+        5: { id: document.getElementById('audio-kkb'),    en: document.getElementById('audio-kkb-en'),  name: 'Kho Khiem Bing'  },
       };
 
       const videoWidagdo = document.getElementById('video-widagdo');
       const videoDoes    = document.getElementById('video-does');
-      let activeVideo    = null;
-      let activeTarget   = null;
-      const markerNames  = { 2:'Lim Kwi Bing', 3:'Ong Kian Bie', 4:'Tan Liep Poen', 5:'Kho Khiem Bing' };
+      let activeVideo  = null;
+      let activeTarget = null;
 
       function stopAllAudio() {
-        Object.values(audios).forEach(({ id, en }) => {
+        Object.values(audioMap).forEach(({ id, en }) => {
           [id, en].forEach(a => { try { a.pause(); a.currentTime = 0; } catch(e){} });
         });
       }
 
-      function showLangPanel(idx) {
-        log('✅ showLangPanel(' + idx + ')');
+      function showPanel(idx) {
         activeTarget = idx;
-        document.getElementById('lang-panel-title').textContent = markerNames[idx] || 'Pilih bahasa';
-        btnLang1.classList.remove('playing');
-        btnLang2.classList.remove('playing');
+        langName.textContent = audioMap[idx].name;
+        btnId.classList.remove('active-lang');
+        btnEn.classList.remove('active-lang');
         langPanel.classList.add('active');
-        log('panel classList: ' + langPanel.className);
-        log('panel display: ' + window.getComputedStyle(langPanel).display);
       }
 
-      function hideLangPanel() {
+      function hidePanel() {
         langPanel.classList.remove('active');
         activeTarget = null;
-        btnLang1.classList.remove('playing');
-        btnLang2.classList.remove('playing');
+        btnId.classList.remove('active-lang');
+        btnEn.classList.remove('active-lang');
       }
 
-      btnLang1.addEventListener('click', () => {
+      btnId.addEventListener('click', () => {
         if (activeTarget === null) return;
         stopAllAudio();
-        audios[activeTarget].id.play().catch(e => log('❌ play ID error: ' + e));
-        btnLang1.classList.add('playing');
-        btnLang2.classList.remove('playing');
+        audioMap[activeTarget].id.play().catch(e => console.error(e));
+        btnId.classList.add('active-lang');
+        btnEn.classList.remove('active-lang');
       });
 
-      btnLang2.addEventListener('click', () => {
+      btnEn.addEventListener('click', () => {
         if (activeTarget === null) return;
         stopAllAudio();
-        audios[activeTarget].en.play().catch(e => log('❌ play EN error: ' + e));
-        btnLang2.classList.add('playing');
-        btnLang1.classList.remove('playing');
+        audioMap[activeTarget].en.play().catch(e => console.error(e));
+        btnEn.classList.add('active-lang');
+        btnId.classList.remove('active-lang');
       });
 
       unmuteBtn.addEventListener('click', () => {
@@ -208,38 +223,33 @@
       function showError(msg) {
         errorMsg.style.display = 'block';
         errorMsg.textContent = msg;
-        log('❌ ' + msg);
       }
 
       async function startAR() {
         try {
           await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-          log('📷 Kamera OK');
-        } catch (err) {
-          showError("Akses kamera ditolak.");
+        } catch(e) {
+          showError('Akses kamera ditolak. Izinkan kamera di pengaturan browser.');
           return;
         }
-        arCameraPermission.style.display = 'none';
+        arStart.style.display = 'none';
         try {
           await sceneEl.systems['mindar-image-system'].start();
-          log('🚀 MindAR started');
-        } catch (err) {
-          showError("Gagal memulai AR: " + err.message);
+        } catch(e) {
+          showError('Gagal memulai AR: ' + e.message);
         }
       }
 
-      sceneEl.addEventListener('arError', (e) => showError("AR Error: " + (e.detail || "Unknown")));
-      sceneEl.addEventListener('arReady', () => log('🎯 arReady'));
+      btnStart.addEventListener('click', startAR);
 
-      sceneEl.addEventListener('loaded', () => {
-        log('✅ scene loaded');
-        arCameraPermission.addEventListener('click', startAR);
+      sceneEl.addEventListener('arError', (e) => showError('AR Error: ' + (e.detail || 'Unknown')));
 
+      // Pasang target event setelah arReady — MindAR baru siap di titik ini
+      sceneEl.addEventListener('arReady', () => {
         const targets = document.querySelectorAll('[mindar-image-target]');
-        log('🎯 total targets: ' + targets.length);
 
+        // Index 0: Video Widagdo
         targets[0].addEventListener('targetFound', () => {
-          log('📍 target 0 found');
           activeVideo = videoWidagdo;
           videoWidagdo.muted = true;
           videoWidagdo.play().catch(e=>{});
@@ -250,8 +260,8 @@
           activeVideo = null; unmuteBtn.style.display = 'none';
         });
 
+        // Index 1: Video Does
         targets[1].addEventListener('targetFound', () => {
-          log('📍 target 1 found');
           activeVideo = videoDoes;
           videoDoes.muted = true;
           videoDoes.play().catch(e=>{});
@@ -262,16 +272,10 @@
           activeVideo = null; unmuteBtn.style.display = 'none';
         });
 
+        // Index 2-5: Tombol dua bahasa
         [2, 3, 4, 5].forEach(idx => {
-          targets[idx].addEventListener('targetFound', () => {
-            log('📍 target ' + idx + ' found → showLangPanel');
-            showLangPanel(idx);
-          });
-          targets[idx].addEventListener('targetLost', () => {
-            log('📍 target ' + idx + ' lost');
-            stopAllAudio();
-            hideLangPanel();
-          });
+          targets[idx].addEventListener('targetFound', () => showPanel(idx));
+          targets[idx].addEventListener('targetLost',  () => { stopAllAudio(); hidePanel(); });
         });
       });
     </script>
