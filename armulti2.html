@@ -261,13 +261,13 @@
         });
 
         // Index 1: Video Does
-        targets[1].addEventListener('targetFound', () => {
+        targets[5].addEventListener('targetFound', () => {
           activeVideo = videoDoes;
           videoDoes.muted = true;
           videoDoes.play().catch(e=>{});
           unmuteBtn.style.display = 'block';
         });
-        targets[1].addEventListener('targetLost', () => {
+        targets[5].addEventListener('targetLost', () => {
           videoDoes.pause(); videoDoes.currentTime = 0;
           activeVideo = null; unmuteBtn.style.display = 'none';
         });
