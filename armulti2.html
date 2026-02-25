@@ -12,7 +12,6 @@
         position: fixed !important; top: 0 !important; left: 0 !important;
       }
 
-      /* ── Layar awal ── */
       #ar-start {
         position: fixed; inset: 0;
         background: black; color: white;
@@ -31,7 +30,6 @@
         font-family: sans-serif;
       }
 
-      /* ── Error ── */
       #error-msg {
         display: none;
         position: fixed; bottom: 20px; left: 0; width: 100%;
@@ -39,7 +37,6 @@
         font-size: 1em; z-index: 9999; padding: 0 16px;
       }
 
-      /* ── Unmute video ── */
       #unmute-btn {
         display: none;
         position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%);
@@ -49,7 +46,6 @@
         white-space: nowrap;
       }
 
-      /* ── Panel tombol bahasa ── */
       #lang-panel {
         display: none;
         position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%);
@@ -70,14 +66,11 @@
         padding: 16px 32px; font-size: 1.2em;
         font-family: sans-serif; cursor: pointer; white-space: nowrap;
       }
-      .lang-btn.active-lang {
-        background: white; color: black;
-      }
+      .lang-btn.active-lang { background: white; color: black; }
     </style>
   </head>
   <body>
 
-    <!-- Layar awal -->
     <div id="ar-start">
       <p>Ketuk tombol di bawah untuk memulai AR dan izinkan akses kamera</p>
       <button id="btn-start">📷 Mulai AR</button>
@@ -86,15 +79,18 @@
     <div id="error-msg"></div>
     <button id="unmute-btn">🔊 Ketuk untuk aktifkan suara</button>
 
-    <!-- Audio di luar a-scene -->
-    <audio id="audio-lim"    src="https://senirupadisini.github.io/audio_lim_kwi_bing_id.mp3"   preload="auto"></audio>
-    <audio id="audio-ong"    src="https://senirupadisini.github.io/audio_ong_kian_bie_id.mp3"   preload="auto"></audio>
-    <audio id="audio-tlp"    src="https://senirupadisini.github.io/audio_tan_liep_poen_id.mp3"  preload="auto"></audio>
-    <audio id="audio-kkb"    src="https://senirupadisini.github.io/audio_kho_khiem_bing_id.mp3" preload="auto"></audio>
+    <!-- Audio -->
+    <audio id="audio-lim-id" src="https://senirupadisini.github.io/audio_lim_kwi_bing_id.mp3"   preload="auto"></audio>
     <audio id="audio-lim-en" src="https://senirupadisini.github.io/audio_lim_kwi_bing.mp3"      preload="auto"></audio>
+
+    <audio id="audio-ong-id" src="https://senirupadisini.github.io/audio_ong_kian_bie_id.mp3"   preload="auto"></audio>
     <audio id="audio-ong-en" src="https://senirupadisini.github.io/audio_ong_kian_bie.mp3"      preload="auto"></audio>
-    <audio id="audio-tlp-en" src="https://senirupadisini.github.io/audio_tan_liep_poen.mp3"     preload="auto"></audio>
+
+    <audio id="audio-kkb-id" src="https://senirupadisini.github.io/audio_kho_khiem_bing_id.mp3" preload="auto"></audio>
     <audio id="audio-kkb-en" src="https://senirupadisini.github.io/audio_kho_khiem_bing.mp3"    preload="auto"></audio>
+
+    <audio id="audio-tlp-id" src="https://senirupadisini.github.io/audio_tan_liep_poen_id.mp3"  preload="auto"></audio>
+    <audio id="audio-tlp-en" src="https://senirupadisini.github.io/audio_tan_liep_poen.mp3"     preload="auto"></audio>
 
     <!-- Panel bahasa -->
     <div id="lang-panel">
@@ -115,7 +111,7 @@
       <a-assets>
         <video id="video-widagdo" src="https://senirupadisini.github.io/video_widagdo.mp4"
                playsinline webkit-playsinline loop preload="auto" crossorigin="anonymous"></video>
-        <video id="video-does"    src="https://senirupadisini.github.io/video_does.mp4"
+        <video id="video-does" src="https://senirupadisini.github.io/video_does.mp4"
                playsinline webkit-playsinline loop preload="auto" crossorigin="anonymous"></video>
         <a-asset-item id="model-tlp" src="https://senirupadisini.github.io/model_tan_liep_poen.glb"></a-asset-item>
         <a-asset-item id="model-kkb" src="https://senirupadisini.github.io/model_kho_khiem_bing.glb"></a-asset-item>
@@ -123,34 +119,34 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- targetIndex 0: Lim Kwi Bing → IMAGE MARKER + AUDIO -->
-      <a-entity mindar-image-target="targetIndex: 0">
+      <!-- targetIndex 0 = Lim Kwi Bing → image marker + audio -->
+      <a-entity id="target-lim" mindar-image-target="targetIndex: 0">
         <a-image src="https://senirupadisini.github.io/lim_kwi_bing_marker.jpg" position="0 0 0" width="1" height="1"></a-image>
       </a-entity>
 
-      <!-- targetIndex 1: Ong Kian Bie → IMAGE MARKER + AUDIO -->
-      <a-entity mindar-image-target="targetIndex: 1">
+      <!-- targetIndex 1 = Ong Kian Bie → image marker + audio -->
+      <a-entity id="target-ong" mindar-image-target="targetIndex: 1">
         <a-image src="https://senirupadisini.github.io/OngKian_Bie_marker.jpg" position="0 0 0" width="1" height="1"></a-image>
       </a-entity>
 
-      <!-- targetIndex 2: Kho Khiem Bing → 3D GLB + AUDIO -->
-      <a-entity mindar-image-target="targetIndex: 2">
+      <!-- targetIndex 2 = Kho Khiem Bing → 3D model + audio -->
+      <a-entity id="target-kkb" mindar-image-target="targetIndex: 2">
         <a-gltf-model src="#model-kkb" position="0 0 0" scale="0.200 0.200 0.200" rotation="90 0 0"></a-gltf-model>
       </a-entity>
 
-      <!-- targetIndex 3: Tan Liep Poen → 3D GLB + AUDIO -->
-      <a-entity mindar-image-target="targetIndex: 3">
+      <!-- targetIndex 3 = Tan Liep Poen → 3D model + audio -->
+      <a-entity id="target-tlp" mindar-image-target="targetIndex: 3">
         <a-gltf-model src="#model-tlp" position="0 0 0" scale="0.200 0.200 0.200" rotation="0 0 0"></a-gltf-model>
       </a-entity>
 
-      <!-- targetIndex 4: Widagdo → VIDEO -->
-      <a-entity mindar-image-target="targetIndex: 4">
-        <a-video src="#video-widagdo" position="0 0 0" width="1" height="0.56" rotation="0 0 0"></a-video>
+      <!-- targetIndex 4 = Widagdo → video -->
+      <a-entity id="target-widagdo" mindar-image-target="targetIndex: 4">
+        <a-video src="#video-widagdo" position="0 0 0" width="1" height="0.56"></a-video>
       </a-entity>
 
-      <!-- targetIndex 5: W.J.P. van der Does → VIDEO -->
-      <a-entity mindar-image-target="targetIndex: 5">
-        <a-video src="#video-does" position="0 0 0" width="1" height="0.56" rotation="0 0 0"></a-video>
+      <!-- targetIndex 5 = Van der Does → video -->
+      <a-entity id="target-does" mindar-image-target="targetIndex: 5">
+        <a-video src="#video-does" position="0 0 0" width="1" height="0.56"></a-video>
       </a-entity>
 
     </a-scene>
@@ -166,28 +162,44 @@
       const btnId     = document.getElementById('btn-id');
       const btnEn     = document.getElementById('btn-en');
 
-      // audioMap key = targetIndex yang menggunakan audio (0,1,2,3)
-      const audioMap = {
-        0: { id: document.getElementById('audio-lim'),    en: document.getElementById('audio-lim-en'),  name: 'Lim Kwi Bing'   },
-        1: { id: document.getElementById('audio-ong'),    en: document.getElementById('audio-ong-en'),  name: 'Ong Kian Bie'   },
-        2: { id: document.getElementById('audio-kkb'),    en: document.getElementById('audio-kkb-en'),  name: 'Kho Khiem Bing' },
-        3: { id: document.getElementById('audio-tlp'),    en: document.getElementById('audio-tlp-en'),  name: 'Tan Liep Poen'  },
-      };
-
       const videoWidagdo = document.getElementById('video-widagdo');
       const videoDoes    = document.getElementById('video-does');
       let activeVideo  = null;
-      let activeTarget = null;
+      let activeTarget = null; // akan berisi object { id, en, name }
+
+      // ── Definisi audio per seniman, dipanggil lewat ID elemen secara eksplisit ──
+      const seniman = {
+        lim: {
+          name: 'Lim Kwi Bing',
+          id:   document.getElementById('audio-lim-id'),
+          en:   document.getElementById('audio-lim-en'),
+        },
+        ong: {
+          name: 'Ong Kian Bie',
+          id:   document.getElementById('audio-ong-id'),
+          en:   document.getElementById('audio-ong-en'),
+        },
+        kkb: {
+          name: 'Kho Khiem Bing',
+          id:   document.getElementById('audio-kkb-id'),
+          en:   document.getElementById('audio-kkb-en'),
+        },
+        tlp: {
+          name: 'Tan Liep Poen',
+          id:   document.getElementById('audio-tlp-id'),
+          en:   document.getElementById('audio-tlp-en'),
+        },
+      };
 
       function stopAllAudio() {
-        Object.values(audioMap).forEach(({ id, en }) => {
-          [id, en].forEach(a => { try { a.pause(); a.currentTime = 0; } catch(e){} });
+        Object.values(seniman).forEach(s => {
+          [s.id, s.en].forEach(a => { try { a.pause(); a.currentTime = 0; } catch(e){} });
         });
       }
 
-      function showPanel(idx) {
-        activeTarget = idx;
-        langName.textContent = audioMap[idx].name;
+      function showPanel(senimanObj) {
+        activeTarget = senimanObj;
+        langName.textContent = senimanObj.name;
         btnId.classList.remove('active-lang');
         btnEn.classList.remove('active-lang');
         langPanel.classList.add('active');
@@ -201,17 +213,17 @@
       }
 
       btnId.addEventListener('click', () => {
-        if (activeTarget === null) return;
+        if (!activeTarget) return;
         stopAllAudio();
-        audioMap[activeTarget].id.play().catch(e => console.error(e));
+        activeTarget.id.play().catch(e => console.error(e));
         btnId.classList.add('active-lang');
         btnEn.classList.remove('active-lang');
       });
 
       btnEn.addEventListener('click', () => {
-        if (activeTarget === null) return;
+        if (!activeTarget) return;
         stopAllAudio();
-        audioMap[activeTarget].en.play().catch(e => console.error(e));
+        activeTarget.en.play().catch(e => console.error(e));
         btnEn.classList.add('active-lang');
         btnId.classList.remove('active-lang');
       });
@@ -242,45 +254,59 @@
       }
 
       btnStart.addEventListener('click', startAR);
-
       sceneEl.addEventListener('arError', (e) => showError('AR Error: ' + (e.detail || 'Unknown')));
 
       sceneEl.addEventListener('arReady', () => {
-        const targets = document.querySelectorAll('[mindar-image-target]');
-        // targets[0] = Lim Kwi Bing, targets[1] = Ong Kian Bie,
-        // targets[2] = Kho Khiem Bing, targets[3] = Tan Liep Poen,
-        // targets[4] = Widagdo video, targets[5] = Van der Does video
-        // (urutan sesuai urutan elemen di HTML, yang sama dengan targetIndex)
 
-        // targetIndex 0–3: Audio + panel bahasa
-        [0, 1, 2, 3].forEach(idx => {
-          targets[idx].addEventListener('targetFound', () => showPanel(idx));
-          targets[idx].addEventListener('targetLost',  () => { stopAllAudio(); hidePanel(); });
-        });
+        // ── Gunakan getElementById, BUKAN querySelectorAll + index array ──
 
-        // targetIndex 4: Video Widagdo
-        targets[4].addEventListener('targetFound', () => {
+        const tLim     = document.getElementById('target-lim');
+        const tOng     = document.getElementById('target-ong');
+        const tKkb     = document.getElementById('target-kkb');
+        const tTlp     = document.getElementById('target-tlp');
+        const tWidagdo = document.getElementById('target-widagdo');
+        const tDoes    = document.getElementById('target-does');
+
+        // targetIndex 0 → Lim Kwi Bing
+        tLim.addEventListener('targetFound', () => showPanel(seniman.lim));
+        tLim.addEventListener('targetLost',  () => { stopAllAudio(); hidePanel(); });
+
+        // targetIndex 1 → Ong Kian Bie
+        tOng.addEventListener('targetFound', () => showPanel(seniman.ong));
+        tOng.addEventListener('targetLost',  () => { stopAllAudio(); hidePanel(); });
+
+        // targetIndex 2 → Kho Khiem Bing
+        tKkb.addEventListener('targetFound', () => showPanel(seniman.kkb));
+        tKkb.addEventListener('targetLost',  () => { stopAllAudio(); hidePanel(); });
+
+        // targetIndex 3 → Tan Liep Poen
+        tTlp.addEventListener('targetFound', () => showPanel(seniman.tlp));
+        tTlp.addEventListener('targetLost',  () => { stopAllAudio(); hidePanel(); });
+
+        // targetIndex 4 → Video Widagdo
+        tWidagdo.addEventListener('targetFound', () => {
           activeVideo = videoWidagdo;
           videoWidagdo.muted = true;
           videoWidagdo.play().catch(e=>{});
           unmuteBtn.style.display = 'block';
         });
-        targets[4].addEventListener('targetLost', () => {
+        tWidagdo.addEventListener('targetLost', () => {
           videoWidagdo.pause(); videoWidagdo.currentTime = 0;
           activeVideo = null; unmuteBtn.style.display = 'none';
         });
 
-        // targetIndex 5: Video Van der Does
-        targets[5].addEventListener('targetFound', () => {
+        // targetIndex 5 → Video Van der Does
+        tDoes.addEventListener('targetFound', () => {
           activeVideo = videoDoes;
           videoDoes.muted = true;
           videoDoes.play().catch(e=>{});
           unmuteBtn.style.display = 'block';
         });
-        targets[5].addEventListener('targetLost', () => {
+        tDoes.addEventListener('targetLost', () => {
           videoDoes.pause(); videoDoes.currentTime = 0;
           activeVideo = null; unmuteBtn.style.display = 'none';
         });
+
       });
     </script>
   </body>
