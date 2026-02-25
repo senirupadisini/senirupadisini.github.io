@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+      body { margin: 0; overflow: hidden; background: black; }
+      a-scene, canvas { width: 100vw !important; height: 100vh !important; position: fixed !important; top: 0 !important; left: 0 !important; }
+
+      #ar-camera-permission {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: black; color: white; display: flex; justify-content: center;
+        align-items: center; text-align: center; z-index: 1000;
+        font-family: sans-serif; font-size: 1.2em; cursor: pointer;
+        padding: 20px; box-sizing: border-box;
+      }
+      #error-msg {
+        display: none;
+        position: absolute; bottom: 20px; left: 0; width: 100%;
+        text-align: center; color: red; font-family: sans-serif;
+        font-size: 0.9em; z-index: 2000; padding: 0 10px;
+        box-sizing: border-box;
+      }
+      #unmute-btn {
+        display: none;
+        position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+        background: rgba(0,0,0,0.6); color: white; border: 2px solid white;
+        border-radius: 30px; padding: 10px 24px; font-size: 1em;
+        font-family: sans-serif; cursor: pointer; z-index: 2000;
+      }
+
+      /* ── Panel tombol dua bahasa ── */
+      #lang-panel {
+        display: none;
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3000;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+      #lang-panel .lang-label {
+        color: white;
+        font-family: sans-serif;
+        font-size: 0.85em;
+        opacity: 0.8;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+      }
+      #lang-panel .lang-buttons {
+        display: flex;
+        gap: 14px;
+      }
+      .lang-btn {
+        background: rgba(0,0,0,0.65);
+        color: white;
+        border: 2px solid rgba(255,255,255,0.8);
+        border-radius: 30px;
+        padding: 12px 22px;
+        font-size: 1em;
+        font-family: sans-serif;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+        white-space: nowrap;
+      }
+      .lang-btn:active, .lang-btn.playing {
+        background: rgba(255,255,255,0.25);
+        border-color: #fff;
+      }
+      .lang-btn .flag { font-size: 1.3em; margin-right: 6px; }
+    </style>
+  </head>
+  <body>
+    <div id="ar-camera-permission">
+      Ketuk untuk memulai AR dan izinkan akses kamera
+    </div>
+    <div id="error-msg"></div>
+    <button id="unmute-btn">🔊 Ketuk untuk aktifkan suara</button>
+
+    <!-- Panel tombol dua bahasa (muncul saat marker audio terdeteksi) -->
+    <div id="lang-panel">
+      <div class="lang-label" id="lang-panel-title">Pilih bahasa / Choose language</div>
+      <div class="lang-buttons">
+        <button class="lang-btn" id="btn-lang1"><span class="flag">🇮🇩</span>Indonesia</button>
+        <button class="lang-btn" id="btn-lang2"><span class="flag">🌐</span>English</button>
+      </div>
+    </div>
+
+    <a-scene mindar-image="imageTargetSrc: https://senirupadisini.github.io/targets.mind; autoStart: false;"
+             color-space="sRGB"
+             renderer="colorManagement: true, physicallyCorrectLights"
+             vr-mode-ui="enabled: false"
+             device-orientation-permission-ui="enabled: false">
+
+      <a-assets>
+        <!-- Audio Indonesia -->
+        <audio id="audio-lim"     src="https://senirupadisini.github.io/audio_lim_kwi_bing_id.mp3"     preload="auto"></audio>
+        <audio id="audio-ong"     src="https://senirupadisini.github.io/audio_ong_kian_bie_id.mp3"     preload="auto"></audio>
+        <audio id="audio-tlp"     src="https://senirupadisini.github.io/audio_tan_liep_poen_id.mp3"    preload="auto"></audio>
+        <audio id="audio-kkb"     src="https://senirupadisini.github.io/audio_kho_khiem_bing_id.mp3"   preload="auto"></audio>
+
+        <!-- Audio English (ganti src dengan file Anda) -->
+        <audio id="audio-lim-en"  src="https://senirupadisini.github.io/audio_lim_kwi_bing.mp3"  preload="auto"></audio>
+        <audio id="audio-ong-en"  src="https://senirupadisini.github.io/audio_ong_kian_bie.mp3"  preload="auto"></audio>
+        <audio id="audio-tlp-en"  src="https://senirupadisini.github.io/audio_tan_liep_poen.mp3" preload="auto"></audio>
+        <audio id="audio-kkb-en"  src="https://senirupadisini.github.io/audio_kho_khiem_bing.mp3" preload="auto"></audio>
+
+        <!-- Video -->
+        <video id="video-widagdo" src="https://senirupadisini.github.io/video_widagdo.mp4"
+               playsinline webkit-playsinline loop preload="auto" crossorigin="anonymous"></video>
+        <video id="video-does"    src="https://senirupadisini.github.io/video_does.mp4"
+               playsinline webkit-playsinline loop preload="auto" crossorigin="anonymous"></video>
+
+        <!-- 3D Models -->
+        <a-asset-item id="model-tlp" src="https://senirupadisini.github.io/model_tan_liep_poen.glb"></a-asset-item>
+        <a-asset-item id="model-kkb" src="https://senirupadisini.github.io/model_kho_khiem_bing.glb"></a-asset-item>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <!-- Index 0: Widagdo → VIDEO -->
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-video src="#video-widagdo" position="0 0 0" width="1" height="0.56" rotation="0 0 0"></a-video>
+      </a-entity>
+
+      <!-- Index 1: W.J.P. van der Does → VIDEO -->
+      <a-entity mindar-image-target="targetIndex: 1">
+        <a-video src="#video-does" position="0 0 0" width="1" height="0.56" rotation="0 0 0"></a-video>
+      </a-entity>
+
+      <!-- Index 2: Lim Kwi Bing → AUDIO + tombol bahasa -->
+      <a-entity mindar-image-target="targetIndex: 2">
+        <a-image src="https://senirupadisini.github.io/lim_kwi_bing_marker.jpg" position="0 0 0" width="1" height="1"></a-image>
+      </a-entity>
+
+      <!-- Index 3: Ong Kian Bie → AUDIO + tombol bahasa -->
+      <a-entity mindar-image-target="targetIndex: 3">
+        <a-image src="https://senirupadisini.github.io/OngKian_Bie_marker.jpg" position="0 0 0" width="1" height="1"></a-image>
+      </a-entity>
+
+      <!-- Index 4: Tan Liep Poen → 3D GLB + tombol bahasa -->
+      <a-entity mindar-image-target="targetIndex: 4">
+        <a-gltf-model src="#model-tlp" position="0 0 0" scale="0.1 0.1 0.1" rotation="0 0 0"></a-gltf-model>
+      </a-entity>
+
+      <!-- Index 5: Kho Khiem Bing → 3D GLB + tombol bahasa -->
+      <a-entity mindar-image-target="targetIndex: 5">
+        <a-gltf-model src="#model-kkb" position="0 0 0" scale="0.1 0.1 0.1" rotation="0 0 0"></a-gltf-model>
+      </a-entity>
+
+    </a-scene>
+
+    <script>
+      const sceneEl           = document.querySelector('a-scene');
+      const arCameraPermission = document.getElementById('ar-camera-permission');
+      const errorMsg          = document.getElementById('error-msg');
+      const unmuteBtn         = document.getElementById('unmute-btn');
+      const langPanel         = document.getElementById('lang-panel');
+      const btnLang1          = document.getElementById('btn-lang1');
+      const btnLang2          = document.getElementById('btn-lang2');
+
+      // ── Audio elements ──
+      const audios = {
+        2: { id: document.getElementById('audio-lim'),    en: document.getElementById('audio-lim-en')  },
+        3: { id: document.getElementById('audio-ong'),    en: document.getElementById('audio-ong-en')  },
+        4: { id: document.getElementById('audio-tlp'),    en: document.getElementById('audio-tlp-en')  },
+        5: { id: document.getElementById('audio-kkb'),    en: document.getElementById('audio-kkb-en')  },
+      };
+
+      // ── Video elements ──
+      const videoWidagdo = document.getElementById('video-widagdo');
+      const videoDoes    = document.getElementById('video-does');
+      let activeVideo    = null;
+
+      // Label nama untuk panel (opsional, bisa dikustomisasi)
+      const markerNames = {
+        2: 'Lim Kwi Bing',
+        3: 'Ong Kian Bie',
+        4: 'Tan Liep Poen',
+        5: 'Kho Khiem Bing',
+      };
+
+      let activeTarget = null; // index marker yang aktif saat ini
+
+      // ── Helper: hentikan semua audio ──
+      function stopAllAudio() {
+        Object.values(audios).forEach(({ id, en }) => {
+          [id, en].forEach(a => { a.pause(); a.currentTime = 0; });
+        });
+      }
+
+      // ── Helper: tampilkan / sembunyikan panel ──
+      function showLangPanel(targetIdx) {
+        activeTarget = targetIdx;
+        document.getElementById('lang-panel-title').textContent = markerNames[targetIdx] || 'Pilih bahasa';
+        btnLang1.classList.remove('playing');
+        btnLang2.classList.remove('playing');
+        langPanel.style.display = 'flex';
+      }
+      function hideLangPanel() {
+        langPanel.style.display = 'none';
+        activeTarget = null;
+        btnLang1.classList.remove('playing');
+        btnLang2.classList.remove('playing');
+      }
+
+      // ── Tombol bahasa 1 (Indonesia) ──
+      btnLang1.addEventListener('click', () => {
+        if (activeTarget === null) return;
+        stopAllAudio();
+        audios[activeTarget].id.play().catch(e => console.error(e));
+        btnLang1.classList.add('playing');
+        btnLang2.classList.remove('playing');
+      });
+
+      // ── Tombol bahasa 2 (English) ──
+      btnLang2.addEventListener('click', () => {
+        if (activeTarget === null) return;
+        stopAllAudio();
+        audios[activeTarget].en.play().catch(e => console.error(e));
+        btnLang2.classList.add('playing');
+        btnLang1.classList.remove('playing');
+      });
+
+      // ── Tombol unmute video ──
+      unmuteBtn.addEventListener('click', () => {
+        if (activeVideo) {
+          activeVideo.muted = false;
+          activeVideo.play().catch(e => console.error(e));
+        }
+        unmuteBtn.style.display = 'none';
+      });
+
+      function showError(msg) {
+        errorMsg.style.display = 'block';
+        errorMsg.textContent = msg;
+        console.error(msg);
+      }
+
+      async function startAR() {
+        try {
+          await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        } catch (err) {
+          showError("Akses kamera ditolak. Mohon izinkan akses kamera di pengaturan browser.");
+          return;
+        }
+        arCameraPermission.style.display = 'none';
+        try {
+          await sceneEl.systems['mindar-image-system'].start();
+          console.log("MindAR started.");
+        } catch (err) {
+          showError("Gagal memulai AR: " + err.message);
+        }
+      }
+
+      sceneEl.addEventListener('loaded', () => {
+        arCameraPermission.addEventListener('click', startAR);
+      });
+      sceneEl.addEventListener('arReady', () => console.log("MindAR is ready!"));
+      sceneEl.addEventListener('arError', (e) => showError("AR Error: " + (e.detail || "Unknown error")));
+
+      const targets = document.querySelectorAll('[mindar-image-target]');
+
+      // ── TARGET 0: Widagdo → Video ──
+      targets[0].addEventListener('targetFound', () => {
+        activeVideo = videoWidagdo;
+        videoWidagdo.muted = true;
+        videoWidagdo.play().catch(e => console.error(e));
+        unmuteBtn.style.display = 'block';
+      });
+      targets[0].addEventListener('targetLost', () => {
+        videoWidagdo.pause(); videoWidagdo.currentTime = 0;
+        activeVideo = null; unmuteBtn.style.display = 'none';
+      });
+
+      // ── TARGET 1: Does → Video ──
+      targets[1].addEventListener('targetFound', () => {
+        activeVideo = videoDoes;
+        videoDoes.muted = true;
+        videoDoes.play().catch(e => console.error(e));
+        unmuteBtn.style.display = 'block';
+      });
+      targets[1].addEventListener('targetLost', () => {
+        videoDoes.pause(); videoDoes.currentTime = 0;
+        activeVideo = null; unmuteBtn.style.display = 'none';
+      });
+
+      // ── TARGET 2, 3, 4, 5 → Audio + Tombol Dua Bahasa ──
+      [2, 3, 4, 5].forEach(idx => {
+        targets[idx].addEventListener('targetFound', () => {
+          showLangPanel(idx);
+        });
+        targets[idx].addEventListener('targetLost', () => {
+          stopAllAudio();
+          hideLangPanel();
+        });
+      });
+    </script>
+  </body>
+</html>
