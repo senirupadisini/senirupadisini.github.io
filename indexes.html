@@ -1,13 +1,20 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>SeniRupaDiSini</title>
+    <title>Kolff En Co Drukkerij</title>
     <meta charset="utf-8">
-    <meta name="Seni Rupa di Malang" content="Kronik seni di Malang 1837-1975">
+    <meta name="description" content="&lt;model-viewer&gt; template">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link type="text/css" href="./styles.css" rel="stylesheet"/>
   </head>
   <body>
+    <!-- Audio Element -->
+    <audio id="bg-audio" loop>
+      <source src="audio_ong_kian_bie.mp3" type="audio/mpeg">
+      <!--source src="audio.ogg" type="audio/ogg"-->
+      Your browser does not support the audio element.
+    </audio>
+
     <!-- <model-viewer> HTML element -->
     <model-viewer src="chairil.glb" ar ar-modes="scene-viewer webxr quick-look" camera-controls tone-mapping="neutral" poster="poster.webp" shadow-intensity="1" autoplay>
       <div class="progress-bar hide" slot="progress-bar">
@@ -20,8 +27,31 @@
           <img src="ar_hand_prompt.png">
       </div>
     </model-viewer>  
+
     <script src="script.js"></script>
     <!-- Loads <model-viewer> for browsers: -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
+    <script>
+      const audio = document.getElementById('bg-audio');
+      const modelViewer = document.querySelector('model-viewer');
+
+      // Coba autoplay saat halaman load
+      function tryPlay() {
+        audio.play().catch(() => {
+          // Browser memblokir autoplay, tunggu interaksi pengguna
+          document.addEventListener('click', () => audio.play(), { once: true });
+          document.addEventListener('touchstart', () => audio.play(), { once: true });
+        });
+      }
+
+      // Jalankan audio bersamaan saat model selesai load
+      modelViewer.addEventListener('load', () => {
+        tryPlay();
+      });
+
+      // Fallback: jalankan saat halaman siap jika model cepat load
+      window.addEventListener('load', tryPlay);
+    </script>
   </body>
 </html>
